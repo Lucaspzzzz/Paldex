@@ -1,18 +1,34 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
 
-import jakarta.persistence.*;
+import java.util.List;
 
-@Entity
-@Table(name = "tb_pal")
 public class Pal {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "pal_id")
     private Long palId;
 
+    private String nome;
 
+    private String titulo;
 
+    private String raridade;
+
+    private String elementos;
+
+    private List<Drops> drops;
+
+    private Estatistica estatistica;
+
+    private String habilidadeParceiro;
+
+    private String habilidadePassiva;
+
+    private String habilidadeAtiva;
+
+    private Trabalho trabalhos;
+
+    private String localizacao;
+
+    private Foto foto;
 
 }

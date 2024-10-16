@@ -1,34 +1,31 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
 
-import java.util.List;
+import java.util.Collection;
 
 public class Pal {
 
     private Long palId;
 
-    private String nome;
+    private String name;
 
-    private String titulo;
+    private String title;
 
-    private String raridade;
+    private String rarity;
 
-    private String elementos;
+    private String elements;
 
-    private List<Drops> drops;
+    private Collection<Drops> drops;
 
-    private Estatistica estatistica;
+    private Statistic statistic;
 
-    private String habilidadeParceiro;
+    private String partnerSkill;
 
-    private String habilidadePassiva;
+    private String passiveSkill;
 
-    private String habilidadeAtiva;
+    private String activeSkill;
 
-    private Trabalho trabalhos;
-
-    private String localizacao;
-
-    private Foto foto;
+    private Work works;
+    private Photo photo;
 
 }

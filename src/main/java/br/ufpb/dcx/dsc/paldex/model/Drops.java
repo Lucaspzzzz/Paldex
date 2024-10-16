@@ -1,11 +1,11 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
 public class Drops {
-    private String nome;
+    private String name;
 
-    private String descricao;
+    private String description;
 
-    private int taxa;
+    private int rate;
 
-    private int quantidade;
+    private int amount;
 }

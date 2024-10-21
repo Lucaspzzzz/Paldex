@@ -23,7 +23,7 @@ public class PalController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping("/pals")
+    @GetMapping("/pals")
     @ResponseStatus(HttpStatus.OK)
     public List<PalDTOResponse> listPals() {
         return palService.getAllPals().stream().map(this::convertToDTO).toList();
@@ -37,14 +37,14 @@ public class PalController {
 
     @PostMapping("/pals")
     @ResponseStatus(HttpStatus.CREATED)
-    public PalDTOResponse createPal(@RequestBody Pal pal) {
-        return convertToDTO(palService.savePal(pal));
+    public PalDTOResponse createPal(@RequestBody PalDTO palDto) {
+        return convertToDTO(palService.savePal(convertToEntity(palDto)));
     }
 
     @PutMapping("/pals/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PalDTOResponse updatePal(@PathVariable Long id, @RequestBody Pal updatedPal) {
-        return convertToDTO(palService.updatePal(id, updatedPal));
+    public PalDTOResponse updatePal(@PathVariable Long id, @RequestBody PalDTO updatedPalDTO) {
+        return convertToDTO(palService.updatePal(id, convertToEntity(updatedPalDTO)));
     }
 
     @DeleteMapping("/pals/{id}")

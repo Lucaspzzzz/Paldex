@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 public class LoginRequestDTO {
 
-    @Email
     @NotBlank
     private String email;
 

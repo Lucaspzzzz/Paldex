@@ -6,7 +6,9 @@ import br.ufpb.dcx.dsc.paldex.model.User;
 import br.ufpb.dcx.dsc.paldex.service.UserService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +20,13 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public  UserController(UserService userService, ModelMapper modelMapper){
+    public  UserController(UserService userService, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
         this.userService = userService;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping(path = "/users")
@@ -40,8 +45,10 @@ public class UserController {
 
     @PostMapping(path = "/users")
     @ResponseStatus(HttpStatus.CREATED)
-    UserDTOResponse createUser(@Valid @RequestBody UserDTO userDTO){
+    public UserDTOResponse createUser(@Valid @RequestBody UserDTO userDTO) {
         User u = convertToEntity(userDTO);
+        u.setPassword(passwordEncoder.encode(u.getPassword()));
+
         User saved = userService.createUser(u);
         return convertToDTO(saved);
     }

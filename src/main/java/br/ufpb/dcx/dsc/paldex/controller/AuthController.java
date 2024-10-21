@@ -47,7 +47,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDTOResponse> register(@Valid @RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String rawPassword = user.getPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        System.out.println("Encoded Password: " + encodedPassword);
+        user.setPassword(encodedPassword);
         User savedUser = userService.createUser(user);
         return ResponseEntity.ok(new UserDTOResponse(
                 savedUser.getUserId(),
@@ -57,6 +60,7 @@ public class AuthController {
                 savedUser.getPhoto()
         ));
     }
+
 
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {

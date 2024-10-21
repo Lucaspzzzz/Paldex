@@ -66,16 +66,20 @@ public class UserService {
         user.setEmail(u.getEmail());
         user.setName(u.getName());
 
+        if (u.getUsername() != null && !u.getUsername().isEmpty()) {
+            user.setUsername(u.getUsername());
+        }
+
         if (u.getPassword() != null && !u.getPassword().isEmpty()) {
             user.setPassword(u.getPassword());
         }
+
         if (u.getPhoto() != null) {
             user.setPhoto(u.getPhoto());
         }
 
         return userRepository.save(user);
     }
-
 
     private void checkIfUserHasPermission() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

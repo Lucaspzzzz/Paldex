@@ -1,5 +1,6 @@
 package br.ufpb.dcx.dsc.paldex.config;
 
+import br.ufpb.dcx.dsc.paldex.exception.RoleNotFoundException;
 import br.ufpb.dcx.dsc.paldex.model.Role;
 import br.ufpb.dcx.dsc.paldex.model.RoleName;
 import br.ufpb.dcx.dsc.paldex.model.User;
@@ -33,7 +34,7 @@ public class AdminUserSeed {
 
 
         Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Role ADMIN not found"));
 
         if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             User admin = new User();

@@ -54,9 +54,13 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
-    public UserDTOResponse updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO){
-
+    public UserDTOResponse updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
         User u = convertToEntity(userDTO);
+
+        if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+            u.setPassword(passwordEncoder.encode(u.getPassword()));
+        }
+
         User userUpdated = userService.updateUser(userId, u);
         return convertToDTO(userUpdated);
     }

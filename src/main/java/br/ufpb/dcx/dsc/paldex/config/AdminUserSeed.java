@@ -28,7 +28,12 @@ public class AdminUserSeed {
     @PostConstruct
     public void init() {
 
-        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+        createRoleIfNotExists(RoleName.ROLE_ADMIN);
+        createRoleIfNotExists(RoleName.ROLE_USER);
+
+
+        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
 
         if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             User admin = new User();
@@ -50,3 +55,4 @@ public class AdminUserSeed {
         }
     }
 }
+

@@ -1,9 +1,11 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import java.util.Collection;
 
-import java.util.Set;
-
+@Data
 @Entity
 @Table(name = "tb_drop")
 public class Drop {
@@ -25,6 +27,7 @@ public class Drop {
     @Column(name = "amount")
     private int amount;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "drops")
-    private Set<Pal> pals;
+    private Collection<Pal> pals;
 }

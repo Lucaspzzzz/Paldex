@@ -10,13 +10,12 @@ import java.util.Collection;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "tb_pal")
 public class Pal {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "pal_id")
     private Long palId;
 
@@ -60,6 +59,7 @@ public class Pal {
     @JoinColumn(name = "active_skill_id")
     private ActiveSkill activeSkill;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "pal_id")
     private Collection<Work> works;
@@ -68,5 +68,4 @@ public class Pal {
     @OneToOne
     @JoinColumn(name = "photo_id")
     private Photo photo;
-
 }

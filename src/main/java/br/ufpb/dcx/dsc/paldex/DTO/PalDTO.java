@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class PalDTO {
 
     private Long palId;
@@ -25,15 +24,15 @@ public class PalDTO {
 
     private Set<Drop> drops;
 
-    private Statistic statistic;
+    private StatisticDTO statistic;
 
-    private ActiveSkill partnerSkill;
+    private ActiveSkillDTO partnerSkill;
 
-    private Skill passiveSkill;
+    private SkillDTO passiveSkill;
 
-    private ActiveSkill activeSkill;
+    private ActiveSkillDTO activeSkill;
 
-    private Collection<Work> works;
+    private Collection<WorkDTO> works;
 
     private Photo photo;
 }

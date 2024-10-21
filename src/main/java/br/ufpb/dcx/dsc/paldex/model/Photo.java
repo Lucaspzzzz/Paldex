@@ -1,5 +1,6 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Photo {
     private String photoURL;
 
     @OneToOne(mappedBy = "photo")
+    @JsonIgnore
     private User user;
 
     public Photo(String photoURL) {

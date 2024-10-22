@@ -42,9 +42,19 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(InvalidDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidDataException(InvalidDataException ex) {
+        return new ErrorResponse.Builder()
+                .timestamp(LocalDateTime.now())
+                .code(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.name())
+                .errors(List.of(ex.getMessage()))
+                .build();
+    }
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-
         List<ValidationError> errorList = ex.getConstraintViolations().stream()
                 .map(error -> new ValidationError(error.getPropertyPath().toString(), error.getMessage()))
                 .collect(Collectors.toList());
@@ -61,7 +71,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleArgumentNotValidException(MethodArgumentNotValidException ex) {
-
         List<ValidationError> errorList = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()

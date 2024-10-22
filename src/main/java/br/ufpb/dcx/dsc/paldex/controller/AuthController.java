@@ -1,77 +1,70 @@
 package br.ufpb.dcx.dsc.paldex.controller;
 
-import br.ufpb.dcx.dsc.paldex.DTO.ChangePasswordDTO;
-import br.ufpb.dcx.dsc.paldex.DTO.LoginRequestDTO;
-import br.ufpb.dcx.dsc.paldex.DTO.LoginResponseDTO;
-import br.ufpb.dcx.dsc.paldex.DTO.UserDTOResponse;
+import br.ufpb.dcx.dsc.paldex.DTO.*;
 import br.ufpb.dcx.dsc.paldex.model.User;
-import br.ufpb.dcx.dsc.paldex.security.JwtTokenService;
+import br.ufpb.dcx.dsc.paldex.service.AuthService;
 import br.ufpb.dcx.dsc.paldex.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.modelmapper.ModelMapper;
+
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtTokenService jwtTokenService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AuthService authService;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
 
-    // Login
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwt = jwtTokenService.generateToken(userDetails);
-
-        return ResponseEntity.ok(new LoginResponseDTO(jwt));
+    public AuthController(AuthService authService, ModelMapper modelMapper,UserService userService) {
+        this.authService = authService;
+        this.modelMapper = modelMapper;
+        this.userService = userService;
     }
+
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTOResponse> register(@Valid @RequestBody User user) {
-        String rawPassword = user.getPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        System.out.println("Encoded Password: " + encodedPassword);
-        user.setPassword(encodedPassword);
-        User savedUser = userService.createUser(user);
-        return ResponseEntity.ok(new UserDTOResponse(
-                savedUser.getUserId(),
-                savedUser.getName(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getPhoto()
-        ));
+    public ResponseEntity<UserDTOResponse> register(@Valid @RequestBody UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
+        User savedUser = authService.register(user);
+        return ResponseEntity.ok(convertToDTO(savedUser));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        LoginResponseDTO loginResponse = authService.login(loginRequestDTO);
+        return ResponseEntity.ok(loginResponse);
+    }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
+        authService.changePassword(changePasswordDTO);
+        return ResponseEntity.ok("Password updated successfully.");
+    }
 
-        if (passwordEncoder.matches(changePasswordDTO.getOldPassword(), currentUser.getPassword())) {
-            currentUser.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
-            userService.updateUser(currentUser.getUserId(), currentUser);
-            return ResponseEntity.ok("Password updated successfully.");
-        } else {
-            return ResponseEntity.status(400).body("Old password is incorrect.");
-        }
+    @PutMapping("/edit-account")
+    public ResponseEntity<UserDTOResponse> editAccount(@Valid @RequestBody EditAccountDTO editAccountDTO) {
+        User updatedUser = authService.editAccount(editAccountDTO);
+        return ResponseEntity.ok(convertToDTO(updatedUser));
+    }
+
+    @DeleteMapping("/delete-account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount() {
+        User authenticatedUser = userService.getAuthenticatedUser(); // Obter o usuário autenticado
+        userService.deleteUser(authenticatedUser.getUserId()); // Deletar a própria conta
+    }
+
+
+    private UserDTOResponse convertToDTO(User user) {
+        return modelMapper.map(user, UserDTOResponse.class);
+    }
+
+    private User convertToEntity(UserDTO userDTO) {
+        return modelMapper.map(userDTO, User.class);
     }
 }
+

@@ -4,6 +4,7 @@ import br.ufpb.dcx.dsc.paldex.DTO.PalDTO;
 import br.ufpb.dcx.dsc.paldex.DTO.PalDTOResponse;
 import br.ufpb.dcx.dsc.paldex.model.Pal;
 import br.ufpb.dcx.dsc.paldex.service.PalService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +38,13 @@ public class PalController {
 
     @PostMapping("/pals")
     @ResponseStatus(HttpStatus.CREATED)
-    public PalDTOResponse createPal(@RequestBody PalDTO palDto) {
+    public PalDTOResponse createPal(@Valid @RequestBody PalDTO palDto) {
         return convertToDTO(palService.savePal(convertToEntity(palDto)));
     }
 
     @PutMapping("/pals/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PalDTOResponse updatePal(@PathVariable Long id, @RequestBody PalDTO updatedPalDTO) {
+    public PalDTOResponse updatePal(@Valid @PathVariable Long id, @RequestBody PalDTO updatedPalDTO) {
         return convertToDTO(palService.updatePal(id, convertToEntity(updatedPalDTO)));
     }
 

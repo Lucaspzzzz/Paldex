@@ -92,7 +92,6 @@ public class PalService {
     }
 
     public Pal getPal(Long id) {
-        System.out.println(palRepository.getReferenceById(id).getDrops());
         return palRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Pal não encontrado"));
     }
 

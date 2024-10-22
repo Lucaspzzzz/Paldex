@@ -50,7 +50,6 @@ public class AuthService {
 
     // Login a user
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        // Verifica se o usuário existe antes de tentar autenticar
         userRepository.findByEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> new InvalidDataException("User not registered with this email."));
 

@@ -1,17 +1,20 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Collection;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "tb_pal")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Pal {
 
     @Id
@@ -33,6 +36,10 @@ public class Pal {
     @Enumerated(EnumType.STRING)
     @Column(name = "element")
     private Set<Elements> elements;
+
+    @ManyToMany(mappedBy = "pals")
+    @JsonIgnore // Ignora para evitar referência circular
+    private Set<Team> teams;
 
     @JsonIgnore
     @ManyToMany
@@ -62,7 +69,7 @@ public class Pal {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "pal_id")
-    private Collection<Work> works;
+    private Set<Work> works;
 
     @JsonIgnore
     @OneToOne

@@ -1,18 +1,15 @@
 package br.ufpb.dcx.dsc.paldex.DTO;
 
-import br.ufpb.dcx.dsc.paldex.model.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+import java.util.Set;
+
+@Data
 @NoArgsConstructor
-
+@AllArgsConstructor
 public class TeamDTO {
-
     private Long teamId;
     private String name;
-    private User user;
-
+    private Set<PalTeamDTO> pals;
 }
+

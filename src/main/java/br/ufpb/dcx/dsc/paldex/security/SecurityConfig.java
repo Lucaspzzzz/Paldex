@@ -37,7 +37,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/change-password", "/api/auth/delete-account").authenticated()
+                        .requestMatchers("/api/auth/change-password", "/api/auth/delete-account","/api/teams/**").authenticated()
                         .requestMatchers("/api/users/**", "/api/pals/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

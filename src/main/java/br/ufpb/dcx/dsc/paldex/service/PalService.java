@@ -83,7 +83,6 @@ public class PalService {
             photoRepository.save(pal.getPhoto());
         }
 
-        // Salva o Pal com todas as dependências
         return palRepository.save(pal);
     }
 
@@ -92,7 +91,6 @@ public class PalService {
     }
 
     public Pal getPal(Long id) {
-        System.out.println(palRepository.getReferenceById(id).getDrops());
         return palRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Pal não encontrado"));
     }
 
@@ -105,42 +103,36 @@ public class PalService {
             pal.setRarity(updatedPal.getRarity());
             pal.setElements(updatedPal.getElements());
 
-            // Atualiza os drops
             Set<Drop> drops = updatedPal.getDrops();
             if (drops != null) {
                 dropRepository.saveAll(drops);
                 pal.setDrops(drops);
             }
 
-            // Atualiza a estatística
             Statistic statistic = updatedPal.getStatistic();
             if (statistic != null) {
                 statisticRepository.save(statistic);
                 pal.setStatistic(statistic);
             }
 
-            // Atualiza a partnerSkill
             ActiveSkill partnerSkill = updatedPal.getPartnerSkill();
             if (partnerSkill != null) {
                 activeSkillRepository.save(partnerSkill);
                 pal.setPartnerSkill(partnerSkill);
             }
 
-            // Atualiza a passiveSkill
             Skill passiveSkill = updatedPal.getPassiveSkill();
             if (passiveSkill != null) {
                 skillRepository.save(passiveSkill);
                 pal.setPassiveSkill(passiveSkill);
             }
 
-            // Atualiza a activeSkill
             ActiveSkill activeSkill = updatedPal.getActiveSkill();
             if (activeSkill != null) {
                 activeSkillRepository.save(activeSkill);
                 pal.setActiveSkill(activeSkill);
             }
 
-            // Atualiza os works
             if (updatedPal.getWorks() != null) {
                 workRepository.saveAll(updatedPal.getWorks());
                 pal.setWorks(updatedPal.getWorks());
@@ -155,5 +147,7 @@ public class PalService {
     public void deletePal(Long id) {
         palRepository.deleteById(id);
     }
+
+
 
 }

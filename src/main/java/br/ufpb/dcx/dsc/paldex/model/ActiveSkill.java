@@ -1,7 +1,9 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "tb_active_skill")
 public class ActiveSkill extends Skill {

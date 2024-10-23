@@ -85,16 +85,19 @@ public class AuthService {
 
 
     public User editAccount(EditAccountDTO editAccountDTO) {
+        // Obtém o usuário autenticado
         User currentUser = getAuthenticatedUser();
 
+        // Validações de email e username para garantir que não estão sendo usados por outro usuário
         if (!editAccountDTO.getEmail().equals(currentUser.getEmail()) && userRepository.existsByEmail(editAccountDTO.getEmail())) {
-            throw new InvalidDataException("Email is already taken.");
+            throw new InvalidDataException("Email já está em uso.");
         }
 
         if (!editAccountDTO.getUsername().equals(currentUser.getUsername()) && userRepository.existsByUsername(editAccountDTO.getUsername())) {
-            throw new InvalidDataException("Username is already taken.");
+            throw new InvalidDataException("Nome de usuário já está em uso.");
         }
 
+        // Atualiza as informações do usuário atual
         currentUser.setEmail(editAccountDTO.getEmail());
         currentUser.setUsername(editAccountDTO.getUsername());
         currentUser.setName(editAccountDTO.getName());

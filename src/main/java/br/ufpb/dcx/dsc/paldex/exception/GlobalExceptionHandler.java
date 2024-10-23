@@ -53,6 +53,7 @@ public class GlobalExceptionHandler {
                 .errors(List.of(ex.getMessage()))
                 .build();
     }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         List<ValidationError> errorList = ex.getConstraintViolations().stream()
@@ -71,17 +72,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<ValidationError> errorList = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
+        List<String> errorMessages = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.toList());
+
+        // Inclui sua mensagem personalizada se for uma situação que não mudou nada
+        if (errorMessages.isEmpty()) {
+            errorMessages.add("Você precisa alterar algo para atualizar.");
+        }
 
         ErrorResponse errorResponse = new ErrorResponse.Builder()
                 .timestamp(LocalDateTime.now())
                 .code(HttpStatus.BAD_REQUEST.value())
                 .status(HttpStatus.BAD_REQUEST.name())
-                .errors(errorList.stream().map(ValidationError::getMessage).collect(Collectors.toList()))
+                .errors(errorMessages)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

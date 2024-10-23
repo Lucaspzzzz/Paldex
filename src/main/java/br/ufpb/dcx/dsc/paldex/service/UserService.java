@@ -74,16 +74,28 @@ public class UserService {
         checkIfAdmin();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ItemNotFoundException("User " + userId + " not found!"));
+                .orElseThrow(() -> new ItemNotFoundException("Usuário " + userId + " não encontrado!"));
 
+        if (user.getEmail().equals(u.getEmail()) &&
+                user.getUsername().equals(u.getUsername()) &&
+                user.getName().equals(u.getName()) &&
+                (u.getPassword() == null || passwordEncoder.matches(u.getPassword(), user.getPassword())) &&
+                ((u.getPhoto() == null && user.getPhoto() == null) ||
+                        (u.getPhoto() != null && user.getPhoto() != null && u.getPhoto().getPhotoURL().equals(user.getPhoto().getPhotoURL())))) {
+
+            throw new InvalidDataException("Você precisa alterar algo para atualizar.");
+        }
+
+        // Validações para garantir que o email e username não estão em uso
         if (!user.getEmail().equals(u.getEmail()) && userRepository.existsByEmail(u.getEmail())) {
-            throw new InvalidDataException("Email already exists.");
+            throw new InvalidDataException("Email já está em uso.");
         }
 
         if (!user.getUsername().equals(u.getUsername()) && userRepository.existsByUsername(u.getUsername())) {
-            throw new InvalidDataException("Username already exists.");
+            throw new InvalidDataException("Nome de usuário já está em uso.");
         }
 
+        // Atualiza as informações do usuário
         user.setEmail(u.getEmail());
         user.setName(u.getName());
 
@@ -100,6 +112,17 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    private boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new InvalidDataException("Usuário não autenticado.");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 
     public void deleteUser(Long userId) {
@@ -137,19 +160,22 @@ public class UserService {
     }
 
     private void checkIfAdmin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails authenticatedUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        User authenticatedUser = userRepository.findByEmail(authenticatedUserDetails.getUsername())
-                .orElseThrow(() -> new ItemNotFoundException("Authenticated user not found."));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ItemNotFoundException("Authenticated user not found.");
+        }
 
-        boolean isAdmin = authenticatedUser.getRoles()
-                .stream()
-                .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN));
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        if (userDetails == null || userDetails.getUser() == null) {
+            throw new ItemNotFoundException("Authenticated user not found.");
+        }
 
-        if (!isAdmin) {
-            throw new ForbiddenActionException("Only admin can perform this action.");
+        if (!userDetails.getUser().getRoles().stream()
+                .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN))) {
+            throw new ForbiddenActionException("Only admins can perform this action.");
         }
     }
+
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)

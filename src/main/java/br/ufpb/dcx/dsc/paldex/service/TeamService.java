@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class TeamService {
     public Team createTeam(Team team, Authentication auth) {
         User currentUser = getAuthenticatedUser(auth);
         team.setUser(currentUser);
+        team.setUser(userRepository.findByEmail(auth.getName()).get());
         return teamRepository.save(team);
     }
 
@@ -80,9 +82,10 @@ public class TeamService {
         if (team.getPals().contains(pal)) {
             throw new IllegalArgumentException("Pal já está neste time!");
         }
+        team.setUser(userRepository.findByEmail(auth.getName()).get());
 
         team.getPals().add(pal);
-        pal.getTeams().add(team);
+
 
         return teamRepository.save(team);
     }
@@ -90,6 +93,7 @@ public class TeamService {
     @Transactional
     public Team removePalFromTeam(Long teamId, Long palId, Authentication auth) {
         Team team = findTeamByIdAndCheckAuthorization(teamId, auth);
+        Hibernate.initialize(team.getPals());
 
         Pal pal = palRepository.findById(palId)
                 .orElseThrow(() -> new ItemNotFoundException("Pal não encontrado"));
@@ -99,7 +103,6 @@ public class TeamService {
         }
 
         team.getPals().remove(pal);
-        pal.getTeams().remove(team);
 
         return teamRepository.save(team);
     }

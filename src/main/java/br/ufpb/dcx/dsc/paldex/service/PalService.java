@@ -3,6 +3,7 @@ package br.ufpb.dcx.dsc.paldex.service;
 import br.ufpb.dcx.dsc.paldex.exception.ItemNotFoundException;
 import br.ufpb.dcx.dsc.paldex.model.*;
 import br.ufpb.dcx.dsc.paldex.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,6 +91,7 @@ public class PalService {
         return palRepository.findAll();
     }
 
+    @Transactional
     public Pal getPal(Long id) {
         return palRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Pal não encontrado"));
     }
@@ -147,7 +149,4 @@ public class PalService {
     public void deletePal(Long id) {
         palRepository.deleteById(id);
     }
-
-
-
 }

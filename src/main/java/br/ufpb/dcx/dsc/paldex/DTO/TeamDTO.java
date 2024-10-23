@@ -10,6 +10,7 @@ import java.util.Set;
 public class TeamDTO {
     private Long teamId;
     private String name;
-    private Set<PalTeamDTO> pals;
+    private UserDTO userDTO;
+    private Set<PalDTO> pals;
 }
 

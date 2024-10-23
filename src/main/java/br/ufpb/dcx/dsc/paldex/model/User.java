@@ -1,6 +1,7 @@
 package br.ufpb.dcx.dsc.paldex.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +9,13 @@ import lombok.Data;
 import java.util.List;
 import java.util.Set;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.util.Collection;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
 @Table(name = "tb_users")
 
@@ -35,8 +37,9 @@ public class User {
     @OneToOne
     @JoinColumn(name = "photo_id")
     private Photo photo;
-    @JsonIgnore
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Collection<Team> teams;
 
     @ManyToMany(fetch = FetchType.EAGER)

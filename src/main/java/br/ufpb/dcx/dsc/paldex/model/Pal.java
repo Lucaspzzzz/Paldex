@@ -2,10 +2,12 @@ package br.ufpb.dcx.dsc.paldex.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "tb_pal")
+@ToString(exclude = {"teams"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Pal {
@@ -37,8 +40,9 @@ public class Pal {
     @Column(name = "element")
     private Set<Elements> elements;
 
-    @ManyToMany(mappedBy = "pals")
-    @JsonIgnore // Ignora para evitar referência circular
+    @ManyToMany(mappedBy = "pals", fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JsonIgnore
     private Set<Team> teams;
 
     @JsonIgnore

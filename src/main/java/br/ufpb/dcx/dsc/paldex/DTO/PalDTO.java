@@ -51,4 +51,6 @@ public class PalDTO {
 
     @NotNull(message = "A foto não pode ser nula")
     private Photo photo;
+
+    private TeamDTO TeamDTO;
 }
